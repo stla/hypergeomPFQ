@@ -72,7 +72,7 @@ jack alpha x dico k beta c t mu jarray kappa nkappa = do
             let gamma = beta * _betaratio kappa mu i alpha
                 mu' = cleanPart $ update (i-1) (u - 1) mu
                 nmu = _nkappa dico mu'
-            if not (S.null mu') && S.length mu' >= i && u > 1  -- "not (S.null mu')" useless
+            if not (S.null mu') && S.length mu' >= i && u > 1  -- "not (S.null mu')" useless because i>=1
               then
                 jack alpha x dico i gamma (c + 1) t mu' jarray kappa nkappa
               else
