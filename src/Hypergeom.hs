@@ -12,7 +12,7 @@ summation :: forall a. (Fractional a, Eq a)
   => [a] -> [a] -> [a] -> Seq (Maybe Int) -> Int -> a -> Int
      -> a -> Int -> Seq Int -> IOArray (Int, Int) a -> IO a
 summation a b x dico n alpha i z j kappa jarray
- = do
+ = do -- sortir la condition i==n de 'go' (retourner 0)
   let lkappa = kappa `index` (S.length kappa - 1)
   let go :: Int -> a -> a -> IO a
       go kappai !z' !s
@@ -72,7 +72,7 @@ jack alpha x dico k beta c t mu jarray kappa nkappa = do
             let gamma = beta * _betaratio kappa mu i alpha
                 mu' = cleanPart $ update (i-1) (u - 1) mu
                 nmu = _nkappa dico mu'
-            if not (S.null mu') && S.length mu' >= i && u > 1  -- mu' `index` (i - 1) > 0
+            if not (S.null mu') && S.length mu' >= i && u > 1  -- "not (S.null mu')" useless
               then
                 jack alpha x dico i gamma (c + 1) t mu' jarray kappa nkappa
               else
@@ -108,7 +108,7 @@ hypergeom ::
   -> a    -- alpha parameter (usually 2)
   -> [a]  -- "upper" parameters
   -> [a]  -- "lower" parameters
-  -> [a]  -- variables (the eigen values)
+  -> [a]  -- variables (the eigenvalues)
   -> IO a
 hypergeom m alpha a b x = do
   let n = length x

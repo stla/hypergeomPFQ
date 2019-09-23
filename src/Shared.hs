@@ -135,7 +135,7 @@ hypergeoI m alpha a b n x =
       | otherwise = go (kappai + 1) z' s''
       where
       kappa' = kappa ++ [kappai]
-      t = _T alpha a b (S.fromList $ filter (> 0) kappa')
+      t = _T alpha a b (S.fromList $ filter (> 0) kappa') -- inutile de filtrer
       z' = zz * x * (fromIntegral (n-i) + alpha * (fromIntegral kappai-1)) * t
       s' = if j > kappai && i <= n
         then s + summation' (i+1) z' (j-kappai) kappa'
