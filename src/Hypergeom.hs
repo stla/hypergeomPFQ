@@ -81,7 +81,7 @@ jack alpha x dico k beta c t mu jarray kappa nkappa = do
               else
                 when (nkappa > 1) $ do
                   entry' <- readArray jarray (nkappa, t)
-                  if not (S.null mu') && mu' `index` 0 > 0 -- any (> 0) mu'
+                  if not (S.null mu') -- any (> 0) mu'
                     then do
                       entry <- readArray jarray (nmu, t - 1)
                       writeArray
