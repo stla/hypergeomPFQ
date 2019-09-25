@@ -12,49 +12,52 @@ summation :: forall a. (Fractional a, Eq a)
   => [a] -> [a] -> [a] -> Seq (Maybe Int) -> Int -> a -> Int
      -> a -> Int -> Seq Int -> IOArray (Int, Int) a -> IO a
 summation a b x dico n alpha i z j kappa jarray
- = do -- sortir la condition i==n de 'go' (retourner 0)
-  let lkappa = kappa `index` (S.length kappa - 1)
-  let go :: Int -> a -> a -> IO a
-      go kappai !z' !s
-        | i == n || i == 0 && kappai > j || i > 0 && kappai > min lkappa j =
-          return s
-        | otherwise = do
-          let kappa' = kappa |> kappai
-              nkappa = _nkappa dico kappa'
-              z'' = z' * _T alpha a b kappa'
-              lkappa' = S.length kappa'
-          when (nkappa > 1 && (lkappa' == 1 || kappa' !? 1 == Just 0)) $ do
-            entry <- readArray jarray (nkappa - 1, 1)
-            let kap0m1' = fromIntegral (kappa' `index` 0 - 1)
-                newval = head x * (1 + alpha * kap0m1') * entry
-            writeArray jarray (nkappa, 1) newval
-          let go' :: Int -> IO ()
-              go' t
-                | t == n + 1 = return ()
-                | otherwise = do
-                  _ <- jack alpha x dico 0 1 0 t kappa' jarray kappa' nkappa
-                  go' (t + 1)
-          _ <- go' 2
-          entry' <- readArray jarray (nkappa, n)
-          let s' = s + z'' * entry'
-          if j > kappai && i <= n
-            then do
-              s'' <-
-                summation
-                  a
-                  b
-                  x
-                  dico
-                  n
-                  alpha
-                  (i + 1)
-                  z''
-                  (j - kappai)
-                  kappa'
-                  jarray
-              go (kappai + 1) z'' (s' + s'')
-            else go (kappai + 1) z'' s'
-  go 1 z 0
+  = if i == n
+    then
+      return 0
+    else do
+      let lkappa = kappa `index` (S.length kappa - 1)
+      let go :: Int -> a -> a -> IO a
+          go kappai !z' !s
+            | i == 0 && kappai > j || i > 0 && kappai > min lkappa j =
+              return s
+            | otherwise = do
+              let kappa' = kappa |> kappai
+                  nkappa = _nkappa dico kappa'
+                  z'' = z' * _T alpha a b kappa'
+                  lkappa' = S.length kappa'
+              when (nkappa > 1 && (lkappa' == 1 || kappa' !? 1 == Just 0)) $ do
+                entry <- readArray jarray (nkappa - 1, 1)
+                let kap0m1' = fromIntegral (kappa' `index` 0 - 1)
+                    newval = head x * (1 + alpha * kap0m1') * entry
+                writeArray jarray (nkappa, 1) newval
+              let go' :: Int -> IO ()
+                  go' t
+                    | t == n + 1 = return ()
+                    | otherwise = do
+                      _ <- jack alpha x dico 0 1 0 t kappa' jarray kappa' nkappa
+                      go' (t + 1)
+              _ <- go' 2
+              entry' <- readArray jarray (nkappa, n)
+              let s' = s + z'' * entry'
+              if j > kappai && i <= n
+                then do
+                  s'' <-
+                    summation
+                      a
+                      b
+                      x
+                      dico
+                      n
+                      alpha
+                      (i + 1)
+                      z''
+                      (j - kappai)
+                      kappa'
+                      jarray
+                  go (kappai + 1) z'' (s' + s'')
+                else go (kappai + 1) z'' s'
+      go 1 z 0
 
 jack :: Fractional a
   => a -> [a] -> Seq (Maybe Int) -> Int -> a -> Int -> Int -> Seq Int
@@ -72,13 +75,13 @@ jack alpha x dico k beta c t mu jarray kappa nkappa = do
             let gamma = beta * _betaratio kappa mu i alpha
                 mu' = cleanPart $ update (i-1) (u - 1) mu
                 nmu = _nkappa dico mu'
-            if not (S.null mu') && S.length mu' >= i && u > 1  -- "not (S.null mu')" useless because i>=1
+            if S.length mu' >= i && u > 1  -- "not (S.null mu')" useless because i>=1
               then
                 jack alpha x dico i gamma (c + 1) t mu' jarray kappa nkappa
               else
                 when (nkappa > 1) $ do
                   entry' <- readArray jarray (nkappa, t)
-                  if any (> 0) mu'
+                  if not (S.null mu') && mu' `index` 0 > 0 -- any (> 0) mu'
                     then do
                       entry <- readArray jarray (nmu, t - 1)
                       writeArray
