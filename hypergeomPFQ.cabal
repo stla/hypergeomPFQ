@@ -1,13 +1,14 @@
 name:                hypergeomPFQ
 version:             0.1.0.0
--- synopsis:
-description:         Hypergeometric function of a matrix argument
+synopsis:            Hypergeometric function of a matrix argument
+description:         Evaluation of hypergeometric functions of a matrix argument,
+                     following Koev & Edelman's algorithm
 homepage:            https://github.com/stla/hypergeomPFQ#readme
 license:             GPL-3
 author:              Stéphane Laurent
-maintainer:          laurent_step@yahoo.fr
+maintainer:          laurent_step@outlook.fr
 copyright:           2019 Stéphane Laurent
-category:            Mathematics
+category:            Math, Numerical
 build-type:          Simple
 extra-source-files:  README.md
 cabal-version:       >=1.10
@@ -33,6 +34,19 @@ test-suite unit-tests
                       , tasty-hunit
                       , hypergeomPFQ
   Default-Language:     Haskell2010
+
+foreign-library Hypergeom
+  buildable:           True
+  type:                native-shared
+  if os(Windows)
+    options: standalone
+  other-modules:       HyperGeomR
+  build-depends:       base >=4.7 && < 5
+                     , hypergeomPFQ
+                     , inline-r
+  hs-source-dirs:      src-dll
+  c-sources:           StartEnd.c
+  default-language:    Haskell2010
 
 source-repository head
   type:     git
