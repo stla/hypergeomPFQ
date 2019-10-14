@@ -17,10 +17,12 @@ library
   hs-source-dirs:      src
   exposed-modules:     Hypergeom
                      , HypergeomU
+                     , Hypergeom2
   other-modules:       Shared
   build-depends:       base >= 4.7 && < 5
                      , array
                      , containers
+                     , complex-generic
   default-language:    Haskell2010
   ghc-options:         -Wall
 
@@ -36,7 +38,7 @@ test-suite unit-tests
   Default-Language:     Haskell2010
 
 foreign-library Hypergeom
-  buildable:           True
+  buildable:           False
   type:                native-shared
   if os(Windows)
     options: standalone

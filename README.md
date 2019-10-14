@@ -4,6 +4,8 @@
 
 The module `HypergeomU` uses unboxed arrays, while `Hypergeom` uses boxed arrays.
 `Hypergeom` allows to input rational parameters.
+`Hypergeom2` is like `Hypergeom` but it prevents `alpha` to be a complex number 
+(see <https://stackoverflow.com/q/58056296/1100107>).
 
 ### Reference
 
